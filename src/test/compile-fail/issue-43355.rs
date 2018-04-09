@@ -8,8 +8,6 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-#![deny(incoherent_fundamental_impls)]
-
 pub trait Trait1<X> {
     type Output;
 }
@@ -24,7 +22,6 @@ impl<X, T> Trait1<X> for T where T: Trait2<X> {
 
 impl<X> Trait1<Box<X>> for A {
 //~^ ERROR conflicting implementations of trait
-//~| hard error
 //~| downstream crates may implement trait `Trait2<std::boxed::Box<_>>` for type `A`
     type Output = i32;
 }
