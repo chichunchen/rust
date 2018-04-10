@@ -32,8 +32,6 @@ use ty::{self, TyCtxt, TypeFoldable};
 use syntax_pos::DUMMY_SP;
 use rustc_data_structures::sync::Lrc;
 
-use lint;
-
 pub mod specialization_graph;
 
 /// Information pertinent to an overlapping impl error.
@@ -329,36 +327,21 @@ pub(super) fn specialization_graph_provider<'a, 'tcx>(tcx: TyCtxt<'a, 'tcx, 'tcx
             // This is where impl overlap checking happens:
             let insert_result = sg.insert(tcx, impl_def_id);
             // Report error if there was one.
-            let (overlap, used_to_be_allowed) = match insert_result {
-                Err(overlap) => (Some(overlap), false),
-                Ok(opt_overlap) => (opt_overlap, true)
-            };
-
-            if let Some(overlap) = overlap {
-                let msg = format!("conflicting implementations of trait `{}`{}:{}",
+            if let Some(overlap) = match insert_result {
+                Err(overlap) => Some(overlap),
+                Ok(opt_overlap) => opt_overlap,
+            } {
+                let msg = format!("conflicting implementations of trait `{}`{}:",
                     overlap.trait_desc,
                     overlap.self_desc.clone().map_or(
                         String::new(), |ty| {
                             format!(" for type `{}`", ty)
                         }),
-                    if used_to_be_allowed { " (E0119)" } else { "" }
                 );
                 let impl_span = tcx.sess.codemap().def_span(
                     tcx.span_of_impl(impl_def_id).unwrap()
                 );
-                let mut err = if used_to_be_allowed {
-                    tcx.struct_span_lint_node(
-                        lint::builtin::INCOHERENT_FUNDAMENTAL_IMPLS,
-                        tcx.hir.as_local_node_id(impl_def_id).unwrap(),
-                        impl_span,
-                        &msg)
-                } else {
-                    struct_span_err!(tcx.sess,
-                                     impl_span,
-                                     E0119,
-                                     "{}",
-                                     msg)
-                };
+                let mut err = struct_span_err!(tcx.sess, impl_span, E0119, "{}", msg);
 
                 match tcx.span_of_impl(overlap.with_impl) {
                     Ok(span) => {

@@ -263,11 +263,6 @@ pub fn register_builtins(store: &mut lint::LintStore, sess: Option<&Session>) {
             edition: None,
         },
         FutureIncompatibleInfo {
-            id: LintId::of(INCOHERENT_FUNDAMENTAL_IMPLS),
-            reference: "issue #46205 <https://github.com/rust-lang/rust/issues/46205>",
-            edition: None,
-        },
-        FutureIncompatibleInfo {
             id: LintId::of(TYVAR_BEHIND_RAW_POINTER),
             reference: "issue #46906 <https://github.com/rust-lang/rust/issues/46906>",
             edition: Some(Edition::Edition2018),
@@ -314,4 +309,6 @@ pub fn register_builtins(store: &mut lint::LintStore, sess: Option<&Session>) {
         "converted into hard error, see https://github.com/rust-lang/rust/issues/48950");
     store.register_removed("resolve_trait_on_defaulted_unit",
         "converted into hard error, see https://github.com/rust-lang/rust/issues/48950");
+    store.register_removed("incoherent_fundamental_impls",
+        "converted into hard error, see https://github.com/rust-lang/rust/issues/46205");
 }
