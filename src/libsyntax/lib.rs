@@ -19,7 +19,7 @@
        html_root_url = "https://doc.rust-lang.org/nightly/",
        test(attr(deny(warnings))))]
 
-#![feature(unicode)]
+#![feature(unicode_internals)]
 #![feature(rustc_diagnostic_macros)]
 #![feature(non_exhaustive)]
 #![feature(const_atomic_usize_new)]
@@ -32,9 +32,9 @@
 extern crate rustc_cratesio_shim;
 
 #[macro_use] extern crate bitflags;
+extern crate core;
 extern crate serialize;
 #[macro_use] extern crate log;
-extern crate std_unicode;
 pub extern crate rustc_errors as errors;
 extern crate syntax_pos;
 extern crate rustc_data_structures;
